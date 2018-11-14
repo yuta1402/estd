@@ -1,6 +1,7 @@
 #ifndef MEASURE_TIME_HPP
 #define MEASURE_TIME_HPP
 
+#include <iostream>
 #include <chrono>
 #include <string>
 
