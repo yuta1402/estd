@@ -25,7 +25,7 @@ namespace estd
             auto end_time = std::chrono::system_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time_).count();
 
-            std::cout << event_name_ << ": " << elapsed << std::endl;
+            std::cout << event_name_ << ": " << elapsed << "[ms]" << std::endl;
         }
 
     private:
