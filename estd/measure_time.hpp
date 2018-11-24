@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include "stopwatch.hpp"
 
 /*!
 @namespace estd
@@ -15,22 +16,20 @@ namespace estd
     {
     public:
         measure_time(const std::string& event_name) :
-            event_name_{ event_name }
+            event_name_{ event_name },
+            stopwatch_{ true }
         {
-            start_time_ = std::chrono::system_clock::now();
         }
 
         ~measure_time()
         {
-            auto end_time = std::chrono::system_clock::now();
-            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time_).count();
-
+            auto elapsed = stopwatch_.elapsed();
             std::cout << event_name_ << ": " << elapsed << "[ms]" << std::endl;
         }
 
     private:
         const std::string event_name_;
-        std::chrono::system_clock::time_point start_time_;
+        estd::stopwatch stopwatch_;
     };
 }
 
