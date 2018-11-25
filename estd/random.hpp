@@ -39,12 +39,14 @@ namespace estd
     template<class Type>
     inline std::vector<Type> RandomMultiple(const Type& min, const Type& max, size_t num_select)
     {
+        std::size_t size = std::min<std::size_t>(max - min + 1, num_select);
+
         std::vector<Type> tmp;
-        tmp.reserve(num_select);
+        tmp.reserve(size);
 
         std::unordered_map<Type, Type> conversion;
 
-        for(size_t i = 0; i < num_select; ++i) {
+        for(size_t i = 0; i < size; ++i) {
             auto v = Random<Type>(min, max-i);
             auto it = conversion.find(v);
 
@@ -62,7 +64,7 @@ namespace estd
                 it->second = replaced_v;
             } else {
                 tmp.emplace_back(v);
-                if(v != max-i) {
+                if(v != static_cast<Type>(max-i)) {
                     conversion.emplace(v, replaced_v);
                 }
             }
