@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: rsmmr/clang:latest
+    steps:
+      - checkout
+      - run: mkdir build && cd build && cmake ../ && make && ctest --verbose
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build
