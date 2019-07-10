@@ -5,7 +5,7 @@
 void parallel_for_test()
 {
     {
-        estd::parallel_for(0, [](const auto& i){
+        estd::parallel_for(0, []([[maybe_unused]] const auto& i){
         });
     }
 
