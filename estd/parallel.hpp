@@ -17,6 +17,40 @@
 */
 namespace estd
 {
+    template<class Function>
+    inline Function parallel_for(size_t n, Function f)
+    {
+        if (n == 0) {
+            return std::move(f);
+        }
+
+        std::size_t num_threads = std::thread::hardware_concurrency();
+        std::size_t step = std::max<std::size_t>(1, n / num_threads);
+
+        std::vector<std::thread> threads;
+
+        size_t i = 0;
+        for (; i < n - step; i += step) {
+            threads.emplace_back([=, &f](){
+                for (size_t j = i; j < i + step; ++j) {
+                    f(j);
+                }
+            });
+        }
+
+        threads.emplace_back([=, &f](){
+            for (size_t j = i; j < n; ++j) {
+                f(j);
+            }
+        });
+
+        for(auto&& t : threads) {
+            t.join();
+        }
+
+        return std::move(f);
+    }
+
     template<class Iterator, class Function>
     inline Function parallel_for_each(Iterator begin, Iterator end, Function f)
     {
