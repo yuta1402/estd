@@ -49,4 +49,9 @@ void parallel_for_test()
 void parallel_test()
 {
     parallel_for_test();
+
+    // TODO: parallel_for_eachのテストを書く
+    // TODO: parallel_for_with_reseedのテストを書く
+    // TODO: parallel_for_each_with_reseedのテストを書く
+    // TODO: parallel_sumのテストを書く
 }
