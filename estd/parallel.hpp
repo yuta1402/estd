@@ -87,7 +87,7 @@ namespace estd
     }
 
     template<class Function, class RandomEngine>
-    inline Function parallel_for_with_reseed(size_t n, Function f, RandomEngine&& engine = GetDefaultRandomEngine())
+    inline Function parallel_for_with_reseed(size_t n, Function f, RandomEngine&& engine)
     {
         if (n == 0) {
             return std::move(f);
@@ -121,6 +121,12 @@ namespace estd
         }
 
         return std::move(f);
+    }
+
+    template<class Function>
+    inline Function parallel_for_with_reseed(size_t n, Function f)
+    {
+        return parallel_for_with_reseed(n, f, GetDefaultRandomEngine());
     }
 
     template<class Iterator, class Function, class RandomEngine>
