@@ -18,13 +18,12 @@
 namespace estd
 {
     template<class Function>
-    inline Function parallel_for(size_t n, Function f)
+    inline Function parallel_for(size_t n, Function f, std::size_t num_threads = std::thread::hardware_concurrency())
     {
         if (n == 0) {
             return std::move(f);
         }
 
-        std::size_t num_threads = std::thread::hardware_concurrency();
         std::size_t step = std::max<std::size_t>(1, n / num_threads);
 
         std::vector<std::thread> threads;
@@ -52,13 +51,12 @@ namespace estd
     }
 
     template<class Iterator, class Function>
-    inline Function parallel_for_each(Iterator begin, Iterator end, Function f)
+    inline Function parallel_for_each(Iterator begin, Iterator end, Function f, std::size_t num_threads = std::thread::hardware_concurrency())
     {
         if(begin == end) {
             return std::move(f);
         }
 
-        std::size_t num_threads = std::thread::hardware_concurrency();
         std::size_t step = std::max<std::size_t>(1, std::distance(begin, end) / num_threads);
 
         std::vector<std::thread> threads;
@@ -81,19 +79,18 @@ namespace estd
     }
 
     template<class Container, class Function>
-    inline Function parallel_for_each(Container&& c, Function f)
+    inline Function parallel_for_each(Container&& c, Function f, std::size_t num_threads = std::thread::hardware_concurrency())
     {
-        return parallel_for_each(std::begin(c), std::end(c), f);
+        return parallel_for_each(std::begin(c), std::end(c), f, num_threads);
     }
 
     template<class Function, class RandomEngine>
-    inline Function parallel_for_with_reseed(size_t n, Function f, RandomEngine&& engine = GetDefaultRandomEngine())
+    inline Function parallel_for_with_reseed(size_t n, Function f, RandomEngine&& engine, std::size_t num_threads = std::thread::hardware_concurrency())
     {
         if (n == 0) {
             return std::move(f);
         }
 
-        std::size_t num_threads = std::thread::hardware_concurrency();
         std::size_t step = std::max<std::size_t>(1, n / num_threads);
 
         std::vector<std::thread> threads;
@@ -123,14 +120,19 @@ namespace estd
         return std::move(f);
     }
 
+    template<class Function>
+    inline Function parallel_for_with_reseed(size_t n, Function f, std::size_t num_threads = std::thread::hardware_concurrency())
+    {
+        return parallel_for_with_reseed(n, f, GetDefaultRandomEngine(), num_threads);
+    }
+
     template<class Iterator, class Function, class RandomEngine>
-    inline Function parallel_for_each_with_reseed(Iterator begin, Iterator end, Function f, RandomEngine&& engine)
+    inline Function parallel_for_each_with_reseed(Iterator begin, Iterator end, Function f, RandomEngine&& engine, std::size_t num_threads = std::thread::hardware_concurrency())
     {
         if(begin == end) {
             return std::move(f);
         }
 
-        std::size_t num_threads = std::thread::hardware_concurrency();
         std::size_t step = std::max<std::size_t>(1, std::distance(begin, end) / num_threads);
 
         std::vector<std::thread> threads;
@@ -156,31 +158,30 @@ namespace estd
     }
 
     template<class Iterator, class Function>
-    inline Function parallel_for_each_with_reseed(Iterator begin, Iterator end, Function f)
+    inline Function parallel_for_each_with_reseed(Iterator begin, Iterator end, Function f, std::size_t num_threads = std::thread::hardware_concurrency())
     {
-        return parallel_for_each_with_reseed(begin, end, f, GetDefaultRandomEngine());
+        return parallel_for_each_with_reseed(begin, end, f, GetDefaultRandomEngine(), num_threads);
     }
 
     template<class Container, class Function, class RandomEngine>
-    inline Function parallel_for_each_with_reseed(Container&& c, Function f, RandomEngine&& engine)
+    inline Function parallel_for_each_with_reseed(Container&& c, Function f, RandomEngine&& engine, std::size_t num_threads = std::thread::hardware_concurrency())
     {
-        return parallel_for_each_with_reseed(std::begin(c), std::end(c), f, engine);
+        return parallel_for_each_with_reseed(std::begin(c), std::end(c), f, engine, num_threads);
     }
 
     template<class Container, class Function>
-    inline Function parallel_for_each_with_reseed(Container&& c, Function f)
+    inline Function parallel_for_each_with_reseed(Container&& c, Function f, std::size_t num_threads = std::thread::hardware_concurrency())
     {
-        return parallel_for_each_with_reseed(c, f, GetDefaultRandomEngine());
+        return parallel_for_each_with_reseed(c, f, GetDefaultRandomEngine(), num_threads);
     }
 
     template<class Iterator, class Type = typename std::iterator_traits<Iterator>::value_type>
-    inline Type parallel_sum(Iterator begin, Iterator end)
+    inline Type parallel_sum(Iterator begin, Iterator end, std::size_t num_threads = std::thread::hardware_concurrency())
     {
         if(begin == end) {
             return Type(0);
         }
 
-        std::size_t num_threads = std::thread::hardware_concurrency();
         std::size_t step = std::max<std::size_t>(1, std::distance(begin, end) / num_threads);
 
         std::vector<std::future<Type>> futures;
@@ -205,9 +206,9 @@ namespace estd
     }
 
     template<class Container>
-    inline auto parallel_sum(const Container& c)
+    inline auto parallel_sum(const Container& c, std::size_t num_threads = std::thread::hardware_concurrency())
     {
-        return parallel_sum(std::begin(c), std::end(c));
+        return parallel_sum(std::begin(c), std::end(c), num_threads);
     }
 }
 
