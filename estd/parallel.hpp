@@ -210,6 +210,61 @@ namespace estd
     {
         return parallel_sum(std::begin(c), std::end(c), num_threads);
     }
+
+    template<class Iterator, class Compare>
+    inline void parallel_sort_by(Iterator begin, Iterator end, Compare comp, std::size_t num_threads = std::thread::hardware_concurrency())
+    {
+        if (begin == end) {
+            return;
+        }
+
+        std::size_t step = std::max<std::size_t>(1, std::distance(begin, end) / num_threads);
+
+        std::vector<std::thread> threads;
+
+        {
+            auto it = begin;
+            for (; it < end - step; it += step) {
+                threads.emplace_back(std::thread([=](){
+                    std::sort(it, it + step, comp);
+                }));
+            }
+
+            threads.emplace_back(std::thread([=](){
+                std::sort(it, end, comp);
+            }));
+
+            for (auto&& t : threads) {
+                t.join();
+            }
+        }
+
+        {
+            auto it = begin + step;
+            for (; it < end - step; it += step) {
+                std::inplace_merge(begin, it, it + step, comp);
+            }
+            std::inplace_merge(begin, it, end, comp);
+        }
+    }
+
+    template<class Container, class Compare>
+    inline void parallel_sort_by(Container&& c, Compare comp, std::size_t num_threads = std::thread::hardware_concurrency())
+    {
+        parallel_sort_by(std::begin(c), std::end(c), comp, num_threads);
+    }
+
+    template<class Iterator, class Type = typename std::iterator_traits<Iterator>::value_type>
+    inline void parallel_sort(Iterator begin, Iterator end, std::size_t num_threads = std::thread::hardware_concurrency())
+    {
+        parallel_sort_by(begin, end, std::less<Type>(), num_threads);
+    }
+
+    template<class Container>
+    inline void parallel_sort(Container&& c, std::size_t num_threads = std::thread::hardware_concurrency())
+    {
+        parallel_sort(std::begin(c), std::end(c), num_threads);
+    }
 }
 
 #endif
