@@ -5,9 +5,25 @@ jobs:
       - image: rsmmr/clang:latest
     steps:
       - checkout
-      - run: mkdir build && cd build && cmake ../ && make && ctest --verbose
+      - run:
+          name: Build
+          command: mkdir build && cd build && cmake ../ && make
+  test:
+    docker:
+      - image: rsmmr/clang:latest
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: mkdir build && cd build && cmake ../ && make
+      - run:
+          name: Test
+          command: ctest --verbose
 workflows:
   version: 2
   main:
     jobs:
       - build
+      - test:
+        requires:
+          - build
