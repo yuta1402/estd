@@ -60,6 +60,8 @@ namespace estd
             return data_[i];
         }
 
+        size_t size(size_t d) const { return dims_[d]; }
+
     private:
         template<class T>
         size_t init(size_t d, T v)
