@@ -23,7 +23,7 @@ namespace estd
         using reference       = typename container_type::reference;
         using const_reference = typename container_type::const_reference;
 
-        using base_container_type = std::vector<size_t>;
+        using index_container_type = std::vector<size_t>;
 
     public:
         template<class... Args>
@@ -31,9 +31,12 @@ namespace estd
             dim_{ sizeof...(args) },
             size_{},
             data_{},
-            base_{}
+            bases_{},
+            dims_{}
         {
-            size_ = init_base(args...);
+            bases_.resize(dim_);
+            dims_.resize(dim_);
+            size_ = init(0, args...);
             data_.resize(size_);
         }
 
@@ -59,37 +62,40 @@ namespace estd
 
     private:
         template<class T>
-        size_t init_base(T v)
+        size_t init(size_t d, T v)
         {
-            base_.emplace_back(1);
+            bases_[d] = 1;
+            dims_[d] = v;
             return v;
         }
 
         template<class T, class... Args>
-        size_t init_base(T v, Args... args)
+        size_t init(size_t d, T v, Args... args)
         {
-            size_t b = init_base(args...);
-            base_.emplace_back(b);
+            size_t b = init(d+1, args...);
+            bases_[d] = b;
+            dims_[d] = v;
             return (v * b);
         }
 
         template<class T>
         size_t calc_index(size_t d, T i) const
         {
-            return (i*base_[d]);
+            return (i*bases_[d]);
         }
 
         template<class T, class... Args>
         size_t calc_index(size_t d, T i, Args... args) const
         {
-            return (i*base_[d] + calc_index(d+1, args...));
+            return (i*bases_[d] + calc_index(d+1, args...));
         }
 
     private:
         size_t dim_;
         size_t size_;
         container_type data_;
-        base_container_type base_;
+        index_container_type bases_;
+        index_container_type dims_;
     };
 }
 
