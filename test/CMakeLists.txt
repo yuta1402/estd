@@ -7,6 +7,7 @@ include_directories(
 
 add_subdirectory("./combination_solver")
 add_subdirectory("./default_random_engine")
+add_subdirectory("./discrete_distribution")
 add_subdirectory("./parallel")
 add_subdirectory("./random")
 add_subdirectory("./stopwatch")
